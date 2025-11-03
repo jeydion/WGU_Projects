@@ -2,7 +2,7 @@
 Weather module for the Weather program
 Translated from Fortran to Python
 Western Governors University
-Created November 2024
+Created November 2025
 """
 
 from typing import List
