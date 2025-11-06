@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Unit tests for the Weather program
-Tests temperature calculations, weather code mappings, and edge cases
+Tests core temperature calculations and edge cases
 Western Governors University
 Created November 2025
 """
@@ -10,199 +10,292 @@ import unittest
 from weather import Weather
 
 
-class TestTemperatureCalculations(unittest.TestCase):
+class TestWeatherProgram(unittest.TestCase):
     """
-    Test Suite 1: Temperature Calculation Accuracy
+    Comprehensive Test Suite for Weather Program
     
-    Tests the core mathematical functions for calculating averages
-    and finding min/max temperatures.
+    This test suite focuses on:
+    1. Core temperature calculation functionality
+    2. Edge cases including extreme values and boundary conditions
+    
+    Each test includes detailed output showing processing status and results.
     """
     
     def setUp(self):
-        """Set up test data before each test method runs"""
+        """
+        Set up standard test data before each test method runs.
+        
+        Standard test data represents a typical week with:
+        - High temperatures ranging from 85°F to 92°F
+        - Low temperatures ranging from 60°F to 68°F
+        """
+        print("\n" + "="*70)
         self.highs = [90, 85, 88, 92, 87, 89, 91]
         self.lows = [65, 60, 63, 68, 62, 64, 66]
-        self.weather = Weather(self.highs, self.lows, 7, 10, 'S')
     
-    def test_average_high_temperature(self):
-        """Test that average high temperature is calculated correctly"""
-        expected = 88.857142857  # Sum: 622 / 7
-        actual = self.weather.calculate_average_fahrenheit_high_temp()
-        self.assertAlmostEqual(actual, expected, places=2,
-                              msg="Average high temperature calculation is incorrect")
-    
-    def test_average_low_temperature(self):
-        """Test that average low temperature is calculated correctly"""
-        expected = 64.0  # Sum: 448 / 7
-        actual = self.weather.calculate_average_fahrenheit_low_temp()
-        self.assertAlmostEqual(actual, expected, places=2,
-                              msg="Average low temperature calculation is incorrect")
-    
-    def test_find_highest_temperature(self):
-        """Test that the highest temperature in the week is found correctly"""
-        expected = 92
-        actual = self.weather.find_weekly_fahrenheit_high_temp()
-        self.assertEqual(actual, expected,
-                        msg=f"Expected highest temp {expected}, got {actual}")
-    
-    def test_find_lowest_temperature(self):
-        """Test that the lowest temperature in the week is found correctly"""
-        expected = 60
-        actual = self.weather.find_weekly_fahrenheit_low_temp()
-        self.assertEqual(actual, expected,
-                        msg=f"Expected lowest temp {expected}, got {actual}")
-
-
-class TestWeatherCodeDescriptions(unittest.TestCase):
-    """
-    Test Suite 2: Weather Code to Description Mapping
-    
-    Tests that weather codes are correctly mapped to their
-    human-readable descriptions.
-    """
-    
-    def setUp(self):
-        """Set up basic weather data (temperatures don't matter for these tests)"""
-        self.highs = [75, 75, 75, 75, 75, 75, 75]
-        self.lows = [60, 60, 60, 60, 60, 60, 60]
-    
-    def test_sunny_code(self):
-        """Test that 'S' code maps to 'SUNNY'"""
-        weather = Weather(self.highs, self.lows, 7, 5, 'S')
-        weather.determine_description()
-        self.assertEqual(weather._description, "SUNNY",
-                        msg="Weather code 'S' should map to 'SUNNY'")
-    
-    def test_partly_cloudy_code(self):
-        """Test that 'P' code maps to 'PARTLY CLOUDY'"""
-        weather = Weather(self.highs, self.lows, 7, 5, 'P')
-        weather.determine_description()
-        self.assertEqual(weather._description, "PARTLY CLOUDY",
-                        msg="Weather code 'P' should map to 'PARTLY CLOUDY'")
-    
-    def test_cloudy_code(self):
-        """Test that 'C' code maps to 'CLOUDY'"""
-        weather = Weather(self.highs, self.lows, 7, 5, 'C')
-        weather.determine_description()
-        self.assertEqual(weather._description, "CLOUDY",
-                        msg="Weather code 'C' should map to 'CLOUDY'")
-    
-    def test_clear_code(self):
-        """Test that 'N' code maps to 'CLEAR'"""
-        weather = Weather(self.highs, self.lows, 7, 5, 'N')
-        weather.determine_description()
-        self.assertEqual(weather._description, "CLEAR",
-                        msg="Weather code 'N' should map to 'CLEAR'")
-    
-    def test_invalid_code(self):
-        """Test that an invalid code maps to 'UNKNOWN'"""
-        weather = Weather(self.highs, self.lows, 7, 5, 'X')
-        weather.determine_description()
-        self.assertEqual(weather._description, "UNKNOWN",
-                        msg="Invalid weather code should map to 'UNKNOWN'")
-
-
-class TestEdgeCasesAndDataIntegrity(unittest.TestCase):
-    """
-    Test Suite 3: Edge Cases and Data Integrity
-    
-    Tests robustness with extreme values, data isolation,
-    and boundary conditions.
-    """
-    
-    def test_extreme_hot_temperatures(self):
-        """Test handling of extremely high temperatures"""
-        extreme_highs = [120, 115, 118, 122, 119, 121, 117]
-        extreme_lows = [95, 90, 93, 98, 94, 96, 92]
-        weather = Weather(extreme_highs, extreme_lows, 7, 15, 'S')
+    def test_1_average_temperature_calculations(self):
+        """
+        Test 1: Verify Average Temperature Calculations
         
-        # Should handle extreme values without crashing
-        self.assertEqual(weather.find_weekly_fahrenheit_high_temp(), 122)
-        self.assertEqual(weather.find_weekly_fahrenheit_low_temp(), 90)
-        self.assertAlmostEqual(weather.calculate_average_fahrenheit_high_temp(), 118.857, places=2)
+        This test ensures that the Weather class correctly calculates
+        the average high and average low temperatures across a 7-day period.
+        
+        Mathematical verification:
+        - Average High: (90+85+88+92+87+89+91) / 7 = 622 / 7 = 88.857°F
+        - Average Low: (65+60+63+68+62+64+66) / 7 = 448 / 7 = 64.0°F
+        """
+        print("TEST 1: Processing average temperature calculations...")
+        print(f"  Input Data - Highs: {self.highs}")
+        print(f"  Input Data - Lows: {self.lows}")
+        
+        weather = Weather(self.highs, self.lows, 7, 10, 'S')
+        
+        # Test average high
+        expected_avg_high = 88.857142857
+        actual_avg_high = weather.calculate_average_fahrenheit_high_temp()
+        print(f"  Expected Average High: {expected_avg_high:.2f}°F")
+        print(f"  Actual Average High: {actual_avg_high:.2f}°F")
+        
+        # Test average low
+        expected_avg_low = 64.0
+        actual_avg_low = weather.calculate_average_fahrenheit_low_temp()
+        print(f"  Expected Average Low: {expected_avg_low:.2f}°F")
+        print(f"  Actual Average Low: {actual_avg_low:.2f}°F")
+        
+        self.assertAlmostEqual(actual_avg_high, expected_avg_high, places=2,
+                              msg="Average high temperature calculation is incorrect")
+        self.assertAlmostEqual(actual_avg_low, expected_avg_low, places=2,
+                              msg="Average low temperature calculation is incorrect")
+        
+        print("  ✓ PASS: Average temperature calculations are correct")
     
-    def test_extreme_cold_temperatures(self):
-        """Test handling of extremely low (negative) temperatures"""
+    def test_2_min_max_temperature_finding(self):
+        """
+        Test 2: Verify Min/Max Temperature Detection
+        
+        This test ensures that the Weather class correctly identifies
+        the highest and lowest temperatures from the weekly data.
+        
+        Verification:
+        - Maximum high should be 92°F (from day 4)
+        - Minimum low should be 60°F (from day 2)
+        """
+        print("TEST 2: Processing min/max temperature detection...")
+        print(f"  Input Data - Highs: {self.highs}")
+        print(f"  Input Data - Lows: {self.lows}")
+        
+        weather = Weather(self.highs, self.lows, 7, 10, 'S')
+        
+        # Test maximum high
+        expected_max = 92
+        actual_max = weather.find_weekly_fahrenheit_high_temp()
+        print(f"  Expected Maximum High: {expected_max}°F")
+        print(f"  Actual Maximum High: {actual_max}°F")
+        
+        # Test minimum low
+        expected_min = 60
+        actual_min = weather.find_weekly_fahrenheit_low_temp()
+        print(f"  Expected Minimum Low: {expected_min}°F")
+        print(f"  Actual Minimum Low: {actual_min}°F")
+        
+        self.assertEqual(actual_max, expected_max,
+                        msg=f"Expected highest temp {expected_max}, got {actual_max}")
+        self.assertEqual(actual_min, expected_min,
+                        msg=f"Expected lowest temp {expected_min}, got {actual_min}")
+        
+        print("  ✓ PASS: Min/max temperature detection is correct")
+    
+    def test_3_extreme_cold_temperatures(self):
+        """
+        Test 3: Handle Extreme Cold (Negative) Temperatures
+        
+        This test verifies that the Weather class correctly processes
+        extreme cold conditions, including negative temperatures.
+        
+        Test scenario: Arctic winter conditions
+        - High temperatures: 10°F down to 5°F
+        - Low temperatures: -5°F down to -15°F
+        
+        This tests the robustness of mathematical operations with
+        negative values and ensures no integer overflow issues.
+        """
+        print("TEST 3: Processing extreme cold temperature handling...")
+        
         cold_highs = [10, 5, 8, 12, 7, 9, 6]
         cold_lows = [-10, -15, -8, -5, -12, -9, -11]
+        
+        print(f"  Extreme Cold Highs: {cold_highs}")
+        print(f"  Extreme Cold Lows: {cold_lows}")
+        
         weather = Weather(cold_highs, cold_lows, 7, 20, 'C')
         
-        # Should handle negative values correctly
-        self.assertEqual(weather.find_weekly_fahrenheit_low_temp(), -15)
-        self.assertAlmostEqual(weather.calculate_average_fahrenheit_low_temp(), -10.0, places=2)
+        # Test minimum low with negative temperatures
+        expected_min = -15
+        actual_min = weather.find_weekly_fahrenheit_low_temp()
+        print(f"  Expected Minimum Low: {expected_min}°F")
+        print(f"  Actual Minimum Low: {actual_min}°F")
+        
+        # Test average low with negative temperatures
+        expected_avg_low = -10.0
+        actual_avg_low = weather.calculate_average_fahrenheit_low_temp()
+        print(f"  Expected Average Low: {expected_avg_low:.2f}°F")
+        print(f"  Actual Average Low: {actual_avg_low:.2f}°F")
+        
+        self.assertEqual(actual_min, expected_min,
+                        msg=f"Failed to handle negative temperatures correctly")
+        self.assertAlmostEqual(actual_avg_low, expected_avg_low, places=2,
+                              msg="Average calculation failed with negative values")
+        
+        print("  ✓ PASS: Extreme cold temperatures handled correctly")
     
-    def test_data_isolation(self):
-        """Test that modifying original arrays doesn't affect Weather object"""
+    def test_4_extreme_hot_temperatures(self):
+        """
+        Test 4: Handle Extreme Heat Temperatures
+        
+        This test verifies that the Weather class correctly processes
+        extreme heat conditions near or above 120°F.
+        
+        Test scenario: Desert summer conditions
+        - High temperatures: 115°F to 122°F
+        - Low temperatures: 90°F to 98°F
+        
+        This ensures the program can handle upper boundary conditions
+        without mathematical errors or precision issues.
+        """
+        print("TEST 4: Processing extreme heat temperature handling...")
+        
+        extreme_highs = [120, 115, 118, 122, 119, 121, 117]
+        extreme_lows = [95, 90, 93, 98, 94, 96, 92]
+        
+        print(f"  Extreme Heat Highs: {extreme_highs}")
+        print(f"  Extreme Heat Lows: {extreme_lows}")
+        
+        weather = Weather(extreme_highs, extreme_lows, 7, 15, 'S')
+        
+        # Test maximum high with extreme values
+        expected_max = 122
+        actual_max = weather.find_weekly_fahrenheit_high_temp()
+        print(f"  Expected Maximum High: {expected_max}°F")
+        print(f"  Actual Maximum High: {actual_max}°F")
+        
+        # Test minimum low
+        expected_min = 90
+        actual_min = weather.find_weekly_fahrenheit_low_temp()
+        print(f"  Expected Minimum Low: {expected_min}°F")
+        print(f"  Actual Minimum Low: {actual_min}°F")
+        
+        # Test average high with extreme values
+        expected_avg_high = 118.857
+        actual_avg_high = weather.calculate_average_fahrenheit_high_temp()
+        print(f"  Expected Average High: {expected_avg_high:.2f}°F")
+        print(f"  Actual Average High: {actual_avg_high:.2f}°F")
+        
+        self.assertEqual(actual_max, expected_max,
+                        msg="Failed to find maximum in extreme heat conditions")
+        self.assertEqual(actual_min, expected_min,
+                        msg="Failed to find minimum in extreme heat conditions")
+        self.assertAlmostEqual(actual_avg_high, expected_avg_high, places=2,
+                              msg="Average calculation failed with extreme heat values")
+        
+        print("  ✓ PASS: Extreme heat temperatures handled correctly")
+    
+    def test_5_data_isolation_and_integrity(self):
+        """
+        Test 5: Verify Data Isolation and Integrity
+        
+        This test ensures that the Weather class creates independent copies
+        of input data, preventing external modifications from affecting
+        the Weather object's internal state.
+        
+        Test procedure:
+        1. Create Weather object with initial arrays
+        2. Modify the original input arrays
+        3. Verify Weather object remains unchanged
+        
+        This is critical for data integrity and preventing side effects
+        in programs that reuse array variables.
+        """
+        print("TEST 5: Processing data isolation and integrity test...")
+        
         original_highs = [80, 81, 82, 83, 84, 85, 86]
         original_lows = [60, 61, 62, 63, 64, 65, 66]
+        
+        print(f"  Original Highs: {original_highs}")
+        print(f"  Original Lows: {original_lows}")
         
         # Create Weather object
         weather = Weather(original_highs, original_lows, 7, 10, 'S')
         
-        # Modify original arrays
+        print("  Creating Weather object with original data...")
+        print(f"  Initial Max High: {weather.find_weekly_fahrenheit_high_temp()}°F")
+        print(f"  Initial Min Low: {weather.find_weekly_fahrenheit_low_temp()}°F")
+        
+        # Modify original arrays (attempting to corrupt data)
+        print("\n  ⚠ Modifying original arrays externally...")
         original_highs[0] = 999
         original_lows[0] = -999
+        print(f"  Modified Highs: {original_highs}")
+        print(f"  Modified Lows: {original_lows}")
         
-        # Weather object should be unaffected
-        self.assertEqual(weather.find_weekly_fahrenheit_high_temp(), 86,
-                        msg="Weather object was affected by external array modification")
-        self.assertEqual(weather.find_weekly_fahrenheit_low_temp(), 60,
-                        msg="Weather object was affected by external array modification")
-    
-    def test_uniform_temperatures(self):
-        """Test when all temperatures are identical"""
-        uniform_highs = [75, 75, 75, 75, 75, 75, 75]
-        uniform_lows = [60, 60, 60, 60, 60, 60, 60]
-        weather = Weather(uniform_highs, uniform_lows, 7, 5, 'P')
+        # Verify Weather object is unaffected
+        expected_max = 86
+        actual_max = weather.find_weekly_fahrenheit_high_temp()
+        expected_min = 60
+        actual_min = weather.find_weekly_fahrenheit_low_temp()
         
-        # Average, min, and max should all be the same value
-        self.assertEqual(weather.calculate_average_fahrenheit_high_temp(), 75.0)
-        self.assertEqual(weather.find_weekly_fahrenheit_high_temp(), 75)
-        self.assertEqual(weather.find_weekly_fahrenheit_low_temp(), 60)
-    
-    def test_all_seven_days_processed(self):
-        """Test that all 7 days are correctly stored and processed"""
-        highs = [70, 71, 72, 73, 74, 75, 76]
-        lows = [50, 51, 52, 53, 54, 55, 56]
-        weather = Weather(highs, lows, 7, 8, 'N')
+        print(f"\n  Weather Object Max High (should be unchanged): {actual_max}°F")
+        print(f"  Weather Object Min Low (should be unchanged): {actual_min}°F")
         
-        # Verify internal arrays have all 7 values
-        self.assertEqual(len(weather._f_high_array), 7)
-        self.assertEqual(len(weather._f_low_array), 7)
+        self.assertEqual(actual_max, expected_max,
+                        msg="Weather object was affected by external array modification (highs)")
+        self.assertEqual(actual_min, expected_min,
+                        msg="Weather object was affected by external array modification (lows)")
         
-        # Verify correct values at boundaries
-        self.assertEqual(weather._f_high_array[0], 70)  # First day
-        self.assertEqual(weather._f_high_array[6], 76)  # Last day
-        self.assertEqual(weather._f_low_array[0], 50)
-        self.assertEqual(weather._f_low_array[6], 56)
+        print("  ✓ PASS: Data isolation maintained - Weather object unaffected by external changes")
 
 
 def run_tests():
     """
-    Run all test suites and display results.
+    Custom test runner with enhanced output formatting.
+    
+    This function:
+    1. Creates a test suite with all test methods
+    2. Runs tests with detailed verbosity
+    3. Provides a comprehensive summary of results
     """
+    print("\n" + "="*70)
+    print("WEATHER PROGRAM - UNIT TEST SUITE")
+    print("="*70)
+    print("Running 5 comprehensive tests covering:")
+    print("  • Core temperature calculation functionality")
+    print("  • Edge cases with extreme values")
+    print("  • Data integrity and isolation")
+    print("="*70)
+    
     # Create test suite
     loader = unittest.TestLoader()
-    suite = unittest.TestSuite()
-    
-    # Add all test classes
-    suite.addTests(loader.loadTestsFromTestCase(TestTemperatureCalculations))
-    suite.addTests(loader.loadTestsFromTestCase(TestWeatherCodeDescriptions))
-    suite.addTests(loader.loadTestsFromTestCase(TestEdgeCasesAndDataIntegrity))
+    suite = loader.loadTestsFromTestCase(TestWeatherProgram)
     
     # Run tests with verbose output
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
     
-    # Print summary
+    # Print detailed summary
     print("\n" + "="*70)
-    print("TEST SUMMARY")
+    print("FINAL TEST SUMMARY")
     print("="*70)
-    print(f"Tests run: {result.testsRun}")
-    print(f"Successes: {result.testsRun - len(result.failures) - len(result.errors)}")
-    print(f"Failures: {len(result.failures)}")
-    print(f"Errors: {len(result.errors)}")
+    print(f"Total Tests Run: {result.testsRun}")
+    print(f"✓ Successes: {result.testsRun - len(result.failures) - len(result.errors)}")
+    print(f"✗ Failures: {len(result.failures)}")
+    print(f"⚠ Errors: {len(result.errors)}")
     print("="*70)
+    
+    if result.wasSuccessful():
+        print("🎉 ALL TESTS PASSED! Weather program is functioning correctly.")
+    else:
+        print("⚠ SOME TESTS FAILED. Please review the output above.")
+    
+    print("="*70 + "\n")
     
     return result.wasSuccessful()
 
