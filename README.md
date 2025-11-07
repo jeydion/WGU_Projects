@@ -1,2 +1,1 @@
-# WGU_Projects
-WGU MSCS Projects
+WGU MSCS Coursework and Projects
