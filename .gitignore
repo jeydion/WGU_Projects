@@ -1,2 +1,25 @@
 d793/d793_submission/
 *_submission/
+# Submission repos (managed separately)
+_submissions/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+
+# Temp files
+*.tmp
+~$*
