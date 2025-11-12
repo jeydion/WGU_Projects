@@ -1,0 +1,128 @@
+# GitLab CI/CD Pipeline for WGU Projects
+# This runs automatically on every push to GitLab
+
+stages:
+  - test
+  - report
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+# ==================== D793 TESTS ====================
+
+test:d793:
+  stage: test
+  image: python:3.11-slim
+  
+  before_script:
+    # Install system dependencies
+    - apt-get update
+    - apt-get install -y gfortran
+    
+    # Install Python dependencies
+    - cd d793-working
+    - pip install -r requirements.txt
+  
+  script:
+    # Run tests with coverage
+    - pytest --cov=python --cov-report=xml --cov-report=term --cov-report=html -v
+  
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  
+  artifacts:
+    when: always
+    paths:
+      - d793-working/htmlcov/
+      - d793-working/coverage.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: d793-working/coverage.xml
+    expire_in: 30 days
+  
+  only:
+    changes:
+      - d793-working/**/*
+      - .gitlab-ci.yml
+
+# ==================== D794 TESTS ====================
+
+test:d794:
+  stage: test
+  image: python:3.11-slim
+  
+  before_script:
+    - cd d794-working
+    - |
+      if [ -f requirements.txt ]; then
+        pip install -r requirements.txt
+      else
+        pip install pytest pytest-cov
+      fi
+  
+  script:
+    - |
+      if [ -d tests ]; then
+        pytest -v
+      else
+        echo "No tests found - creating placeholder"
+        mkdir -p tests
+        echo "# Tests will be added" > tests/.gitkeep
+      fi
+  
+  allow_failure: true
+  
+  only:
+    changes:
+      - d794-working/**/*
+      - .gitlab-ci.yml
+
+# ==================== COVERAGE REPORT ====================
+
+pages:
+  stage: report
+  
+  dependencies:
+    - test:d793
+  
+  script:
+    - mkdir -p public/d793
+    - cp -r d793-working/htmlcov/* public/d793/ || true
+    - |
+      cat > public/index.html << 'HTML'
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>WGU Projects - Test Coverage</title>
+          <style>
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              h1 { color: #333; }
+              .course { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+              a { color: #0066cc; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+          </style>
+      </head>
+      <body>
+          <h1>WGU MSCS - Test Coverage Reports</h1>
+          <div class="course">
+              <h2>D793 - Formal Languages Overview</h2>
+              <p><a href="d793/index.html">View Coverage Report</a></p>
+          </div>
+          <div class="course">
+              <h2>D794 - Computer Architecture</h2>
+              <p>Coverage report coming soon...</p>
+          </div>
+      </body>
+      </html>
+      HTML
+  
+  artifacts:
+    paths:
+      - public
+  
+  only:
+    - main
